@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutGrid, History, Settings, LogOut, Store, Database } from 'lucide-react';
+import { LayoutGrid, History, Settings, LogOut, Store, Package } from 'lucide-react';
 import { Tab } from '../types';
 
 interface SidebarProps {
@@ -10,6 +10,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
   const navItems = [
     { id: 'pos', icon: Store, label: '收银台' },
+    { id: 'products', icon: Package, label: '商品' },
     { id: 'history', icon: History, label: '订单' },
     { id: 'dashboard', icon: LayoutGrid, label: '报表' },
   ];

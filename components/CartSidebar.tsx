@@ -47,7 +47,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({
           <div>
             <div className="flex justify-between items-center gap-2">
               <h2 className="text-xl font-bold flex items-center gap-2 text-gray-800">
-                <ShoppingCart className="text-indigo-600" />
+                <ShoppingCart id="cart-icon-desktop" className="text-indigo-600" />
                 当前订单
               </h2>
             </div>

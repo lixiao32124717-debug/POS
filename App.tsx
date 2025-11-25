@@ -7,6 +7,7 @@ import History from './components/History';
 import PaymentModal from './components/PaymentModal';
 import Dashboard from './components/Dashboard';
 import Settings from './components/Settings';
+import ProductManagement from './components/ProductManagement';
 import { generateReceiptMessage } from './services/geminiService';
 import { db } from './services/db';
 import { ShoppingCart, ChevronUp, Loader2 } from 'lucide-react';
@@ -191,7 +192,7 @@ const App: React.FC = () => {
           <div className="md:hidden fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 p-3 shadow-lg z-30 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="bg-indigo-600 text-white p-2 rounded-full relative">
-                <ShoppingCart size={20} />
+                <ShoppingCart id="cart-icon-mobile" size={20} />
                 {cartQuantity > 0 && (
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                     {cartQuantity}
@@ -212,6 +213,14 @@ const App: React.FC = () => {
             </button>
           </div>
         </main>
+      )}
+
+      {activeTab === 'products' && (
+        <ProductManagement 
+          products={products} 
+          onAddProduct={handleAddProduct}
+          onDeleteProduct={handleDeleteProduct}
+        />
       )}
 
       {activeTab === 'history' && (

@@ -28,4 +28,4 @@ export interface Transaction {
   aiNote?: string; // AI generated thank you note
 }
 
-export type Tab = 'pos' | 'history' | 'dashboard' | 'settings';
+export type Tab = 'pos' | 'products' | 'history' | 'dashboard' | 'settings';
