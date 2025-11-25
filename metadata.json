@@ -1,0 +1,5 @@
+{
+  "name": "EasyPOS - 智能收银系统",
+  "description": "一个现代化、界面友好的网页收银系统 (POS)。支持商品管理、购物车结算、订单历史记录，并集成 Gemini AI 生成趣味收银小票语录。",
+  "requestFramePermissions": []
+}
