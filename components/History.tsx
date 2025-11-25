@@ -1,12 +1,13 @@
 import React from 'react';
 import { Transaction } from '../types';
-import { Calendar, Receipt } from 'lucide-react';
+import { Calendar, Receipt, Trash2 } from 'lucide-react';
 
 interface HistoryProps {
   transactions: Transaction[];
+  onDeleteTransaction: (id: string) => void;
 }
 
-const History: React.FC<HistoryProps> = ({ transactions }) => {
+const History: React.FC<HistoryProps> = ({ transactions, onDeleteTransaction }) => {
   return (
     <div className="flex-1 bg-gray-50 h-screen overflow-hidden flex flex-col pb-16 md:pb-0">
       <div className="p-6 bg-white border-b border-gray-200 shadow-sm">
@@ -22,8 +23,17 @@ const History: React.FC<HistoryProps> = ({ transactions }) => {
         ) : (
           <div className="space-y-4 max-w-4xl mx-auto">
             {[...transactions].reverse().map((tx) => (
-              <div key={tx.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-start mb-4 border-b border-gray-50 pb-4">
+              <div key={tx.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group relative">
+                
+                <button 
+                  onClick={() => onDeleteTransaction(tx.id)}
+                  className="absolute top-4 right-4 text-gray-300 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition-all"
+                  title="删除订单"
+                >
+                  <Trash2 size={18} />
+                </button>
+
+                <div className="flex justify-between items-start mb-4 border-b border-gray-50 pb-4 pr-10">
                   <div>
                     <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
                       <Calendar size={14} />

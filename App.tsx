@@ -45,13 +45,36 @@ const App: React.FC = () => {
   }, []);
 
   // 2. Auto-save Cart when it changes
-  // We use a flag to prevent saving empty cart overwriting stored cart on initial load race conditions
   useEffect(() => {
     if (!isLoading) {
       db.saveCart(cart);
     }
   }, [cart, isLoading]);
 
+  // Product Actions
+  const handleAddProduct = async (newProduct: Product) => {
+    try {
+      await db.saveProduct(newProduct);
+      setProducts(prev => [...prev, newProduct]);
+    } catch (e) {
+      alert("添加商品失败");
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    if (window.confirm("确定要删除这个商品吗？")) {
+      try {
+        await db.deleteProduct(id);
+        setProducts(prev => prev.filter(p => p.id !== id));
+        // Also remove from cart if present
+        setCart(prev => prev.filter(item => item.id !== id));
+      } catch (e) {
+        alert("删除商品失败");
+      }
+    }
+  };
+
+  // Cart Actions
   const addToCart = (product: Product) => {
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
@@ -82,26 +105,33 @@ const App: React.FC = () => {
 
   const clearCart = () => {
     setCart([]);
-    // db.saveCart([]) handled by useEffect
   };
 
+  // Transaction Actions
   const handleCheckoutClick = () => {
     if (cart.length > 0) {
       setIsPaymentModalOpen(true);
-      setIsCartOpen(false); // Close cart sidebar on mobile when opening modal
+      setIsCartOpen(false);
+    }
+  };
+
+  const handleDeleteTransaction = async (id: string) => {
+    if (window.confirm("确定要删除这条订单记录吗？此操作不可恢复。")) {
+      try {
+        await db.deleteTransaction(id);
+        setTransactions(prev => prev.filter(t => t.id !== id));
+      } catch (e) {
+        alert("删除订单失败");
+      }
     }
   };
 
   const handlePaymentConfirm = async (method: string) => {
     setIsProcessingPayment(true);
     
-    // Calculate Total
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-    // Call AI for receipt note
     const aiNote = await generateReceiptMessage(cart);
 
-    // Create Transaction Object
     const newTransaction: Transaction = {
       id: Date.now().toString(),
       items: [...cart],
@@ -112,10 +142,7 @@ const App: React.FC = () => {
     };
 
     try {
-      // Save to DB
       await db.saveTransaction(newTransaction);
-      
-      // Update UI State
       setTransactions(prev => [...prev, newTransaction]);
       setCart([]);
       setIsPaymentModalOpen(false);
@@ -145,7 +172,12 @@ const App: React.FC = () => {
       
       {activeTab === 'pos' && (
         <main className="flex-1 flex overflow-hidden relative">
-          <ProductGrid products={products} onAddToCart={addToCart} />
+          <ProductGrid 
+            products={products} 
+            onAddToCart={addToCart}
+            onAddProduct={handleAddProduct}
+            onDeleteProduct={handleDeleteProduct}
+          />
           <CartSidebar
             cart={cart}
             onUpdateQuantity={updateQuantity}
@@ -156,7 +188,6 @@ const App: React.FC = () => {
             onClose={() => setIsCartOpen(false)}
           />
           
-          {/* Mobile Cart Summary Bar */}
           <div className="md:hidden fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 p-3 shadow-lg z-30 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="bg-indigo-600 text-white p-2 rounded-full relative">
@@ -184,7 +215,7 @@ const App: React.FC = () => {
       )}
 
       {activeTab === 'history' && (
-        <History transactions={transactions} />
+        <History transactions={transactions} onDeleteTransaction={handleDeleteTransaction} />
       )}
       
       {activeTab === 'dashboard' && (

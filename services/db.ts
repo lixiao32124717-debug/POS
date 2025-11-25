@@ -4,8 +4,13 @@ import { MOCK_PRODUCTS } from '../constants';
 // 数据库接口定义：为了方便未来切换到 Firebase/Supabase 等云端数据库
 interface DatabaseService {
   getProducts(): Promise<Product[]>;
+  saveProduct(product: Product): Promise<void>;
+  deleteProduct(id: string): Promise<void>;
+  
   getTransactions(): Promise<Transaction[]>;
   saveTransaction(transaction: Transaction): Promise<void>;
+  deleteTransaction(id: string): Promise<void>;
+
   getCart(): Promise<CartItem[]>;
   saveCart(cart: CartItem[]): Promise<void>;
   clearCart(): Promise<void>;
@@ -32,6 +37,18 @@ export const db: DatabaseService = {
     return MOCK_PRODUCTS;
   },
 
+  saveProduct: async (product) => {
+    const products = await db.getProducts();
+    products.push(product);
+    localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+  },
+
+  deleteProduct: async (id) => {
+    const products = await db.getProducts();
+    const newProducts = products.filter(p => p.id !== id);
+    localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(newProducts));
+  },
+
   getTransactions: async () => {
     const stored = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
     return stored ? JSON.parse(stored) : [];
@@ -42,6 +59,12 @@ export const db: DatabaseService = {
     const transactions = await db.getTransactions();
     transactions.push(transaction);
     localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(transactions));
+  },
+
+  deleteTransaction: async (id) => {
+    const transactions = await db.getTransactions();
+    const newTransactions = transactions.filter(t => t.id !== id);
+    localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(newTransactions));
   },
 
   getCart: async () => {
